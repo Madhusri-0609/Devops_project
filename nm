@@ -1,0 +1,17 @@
+curl -L "https://start.spring.io/starter.zip?type=maven-project&language=java&groupId=com.example&artifactId=simmanagement&name=simmanagement&packageName=com.example.demo&packaging=jar&javaVersion=17&dependencies=web,data-jpa,h2" -o project.zip
+
+
+unzip -o project.zip -d temp
+cp -r temp/. .
+
+
+/*src → main → resources → application.properties*/
+spring.datasource.url=jdbc:h2:mem:simdb
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+
+
+
+
+./mvnw spring-boot:run
