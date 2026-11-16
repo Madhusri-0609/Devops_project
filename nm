@@ -15,3 +15,29 @@ spring.jpa.hibernate.ddl-auto=update
 
 
 ./mvnw spring-boot:run
+
+
+
+Operation 1: Add SIM
+curl -X POST http://localhost:8080/sim/add -H "Content-Type: application/json" -d '{"simNumber":"9876543210","provider":"Jio"}'
+
+
+Expected status: INACTIVE
+
+Operation 2: Activate SIM
+curl -X POST http://localhost:8080/sim/activate/9876543210 -H "Content-Type: application/json" -d '{"name":"Madhu","age":20,"address":"Tirunelveli"}'
+
+
+Expected status: ACTIVE
+
+Operation 3: Check SIM status
+
+Open in browser:
+http://localhost:8080/sim/9876543210
+
+
+Operation 4: List all SIMs
+
+Open in browser:
+http://localhost:8080/sim/all
+
