@@ -1,0 +1,65 @@
+
+package com.example.demo;
+
+import java.util.*;
+import jakarta.persistence.*;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+@Entity
+class Sim {
+    @Id @GeneratedValue
+    public Integer id;
+    public String simNumber, provider, name, address, status = "INACTIVE";
+    public int age;
+}
+
+interface SimRepository extends JpaRepository<Sim, Integer> {
+    Sim findBySimNumber(String simNumber);
+}
+
+@SpringBootApplication
+@RestController
+public class SimmanagementApplication {
+
+    private final SimRepository repo;
+    public SimmanagementApplication(SimRepository repo) {
+        this.repo = repo;
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(SimmanagementApplication.class, args);
+    }
+
+    @PostMapping("/sim/add")
+    public Sim add(@RequestBody Sim s) {
+        s.status = "INACTIVE";
+        return repo.save(s);
+    }
+
+    @PostMapping("/sim/activate/{simNumber}")
+    public Sim activate(@PathVariable String simNumber, @RequestBody Sim c) {
+        Sim s = get(simNumber);
+        if (s.status.equals("ACTIVE") || c.age < 18)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        s.name = c.name; s.age = c.age; s.address = c.address;
+        s.status = "ACTIVE";
+        return repo.save(s);
+    }
+
+    @GetMapping("/sim/{simNumber}")
+    public Sim get(@PathVariable String simNumber) {
+        Sim s = repo.findBySimNumber(simNumber);
+        if (s == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return s;
+    }
+
+    @GetMapping("/sim/all")
+    public List<Sim> all() {
+        return repo.findAll();
+    }
+}
